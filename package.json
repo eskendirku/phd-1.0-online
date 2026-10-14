@@ -1,0 +1,15 @@
+{
+  "name": "phd-nine-dots",
+  "private": true,
+  "version": "2.0.0",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "node build.js",
+    "preview": "node server.js",
+    "build:css": "tailwindcss -i tailwind.input.css -o tailwind.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.19"
+  }
+}

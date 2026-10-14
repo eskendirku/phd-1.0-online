@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Nine Dots Experiment - PhD Cognitive Task</title>
+    
+    <!-- All libraries are stored locally in vendor/, so the page also works without internet -->
+    <link rel="stylesheet" href="tailwind.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="vendor/jspsych-8.3.0.min.js"></script>
+    <script src="vendor/extension-pipe-0.2.0.min.js"></script>
+    <!-- Fallback to the CDN if the vendor/ folder was not uploaded -->
+    <script>
+      window.initJsPsych || document.write('<script src="https://unpkg.com/jspsych@8.3.0/dist/index.browser.min.js"><\/script>');
+      window.jsPsychExtensionPipe || document.write('<script src="https://unpkg.com/@jspsych/extension-pipe@0.2.0/dist/index.browser.min.js"><\/script>');
+    </script>
+</head>
+<body class="bg-white text-gray-800 font-sans select-none overflow-hidden h-screen w-screen">
+
+  <!-- ============================================ -->
+  <!-- FULLSCREEN ALERT HEADER BANNER MODULE -->
+  <!-- ============================================ -->
+  <div id="fullscreen-prompt-banner" class="fixed top-0 inset-x-0 z-50 px-6 py-4 bg-slate-900 border-b border-slate-800 text-white flex items-center justify-between shadow-2xl transition-all duration-300 transform hidden">
+    <div class="flex items-center gap-3">
+      <div class="w-2.5 h-2.5 bg-amber-500 rounded-full animate-ping"></div>
+      <span class="text-sm font-medium tracking-wide">Рекомендуется проходить эксперимент в полноэкранном режиме для корректной калибровки.</span>
+    </div>
+    <button id="request-fullscreen-btn" class="bg-blue-600 hover:bg-blue-500 text-xs font-bold px-4 py-2 rounded-lg transition-colors shadow">
+      Включить Fullscreen
+    </button>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SCREEN 1: EXPERIMENTAL GROUP CHOICE SELECTOR -->
+  <!-- ============================================ -->
+  <div id="screen-select" class="flex flex-col items-center justify-center min-h-screen bg-white p-8">
+        <p class="text-gray-500 mb-12 text-center text-lg max-w-md font-medium">Выберите группу для начала исследования</p>
+    
+    <div class="flex flex-wrap justify-center gap-8 max-w-5xl">
+      <!-- Control Card -->
+      <button id="btn-group-control" data-group="CONTROL" class="group-btn-selector flex flex-col items-center p-8 bg-gray-50 border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50/20 rounded-3xl transition-all duration-300 w-64 shadow-sm hover:shadow-md cursor-pointer transform hover:-translate-y-1">
+        <div class="w-16 h-16 bg-blue-100/80 rounded-full flex items-center justify-center mb-6 text-blue-600 group-hover:scale-110 transition-transform">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <span class="text-2xl font-bold text-gray-800 tracking-tight font-display">C-Group</span>
+        <p class="text-xs text-gray-500 mt-2 text-center leading-relaxed">.</p>
+      </button>
+
+      <!-- Inertia Card -->
+      <button id="btn-group-inertia" data-group="INERTIA" class="group-btn-selector flex flex-col items-center p-8 bg-gray-50 border-2 border-gray-200 hover:border-red-500 hover:bg-red-50/20 rounded-3xl transition-all duration-300 w-64 shadow-sm hover:shadow-md cursor-pointer transform hover:-translate-y-1">
+        <div class="w-16 h-16 bg-red-100/80 rounded-full flex items-center justify-center mb-6 text-red-600 group-hover:scale-110 transition-transform">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <span class="text-2xl font-bold text-gray-800 tracking-tight font-display">I-Group</span>
+        <p class="text-xs text-gray-500 mt-2 text-center leading-relaxed">.</p>
+      </button>
+
+      <!-- Mirror Card -->
+      <button id="btn-group-mirror" data-group="MIRROR" class="group-btn-selector flex flex-col items-center p-8 bg-gray-50 border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50/20 rounded-3xl transition-all duration-300 w-64 shadow-sm hover:shadow-md cursor-pointer transform hover:-translate-y-1">
+        <div class="w-16 h-16 bg-purple-100/80 rounded-full flex items-center justify-center mb-6 text-purple-600 group-hover:scale-110 transition-transform">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+        </div>
+        <span class="text-2xl font-bold text-gray-800 tracking-tight font-display">M-Group</span>
+        <p class="text-xs text-gray-500 mt-2 text-center leading-relaxed">.</p>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SCREEN 2: MULTI-CHOICE ATTENTION CHECKER -->
+  <!-- ============================================ -->
+  <div id="screen-attention" class="flex flex-col items-center justify-center min-h-screen bg-slate-50/50 p-8 hidden">
+    <!-- Rendered dynamically in experiment.js -->
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SCREEN 3: DETAILED TASK INSTRUCTIONS -->
+  <!-- ============================================ -->
+  <div id="screen-instruction" class="flex flex-col items-center justify-center min-h-screen bg-white p-6 leading-relaxed max-w-4xl mx-auto hidden">
+    <div class="mb-10 text-center">
+      <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mx-auto mb-6">
+        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 .364l-.707 .707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548 .547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+      </div>
+      <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight font-display">Инструкция к основной части</h2>
+    </div>
+    
+    <p class="text-xl text-gray-700 leading-relaxed max-w-3xl text-justify mb-10 font-medium">
+      Отлично! Теперь мы можем перейти к основной задаче. Вам будет необходимо соединить 9 точек 4 прямыми линиями, не отрывая руки. Постарайтесь рисовать каждое свое решение, а не просто мысленно решать задачу.
+    </p>
+    <p class="text-lg text-gray-600 leading-relaxed max-w-3xl text-justify mb-12">
+      В левом углу экрана будут находиться две кнопки. Если Вы нарисовали решение, но оно кажется Вам неправильным, нажмите «Продолжить». В этом случае нарисованные Вами линии будут стерты, а Вы сможете попробовать решить задачу снова. Если Вы уверены в правильности решения, нажмите «Сохранить». В этом случае нарисованные Вами линии будут считаться окончательным ответом.
+    </p>
+    
+    <button id="start-task-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-5 px-16 rounded-2xl shadow-xl transition-all transform hover:scale-105 text-xl font-display cursor-pointer">
+      Продолжить
+    </button>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SCREEN 4: TRIAL TIMEOUT INFORMATION DISPLAY -->
+  <!-- ============================================ -->
+  <div id="screen-timeout-info" class="flex flex-col items-center justify-center min-h-screen bg-white p-12 text-center max-w-4xl mx-auto hidden">
+    <div class="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center text-amber-600 mb-8">
+      <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-8 leading-tight font-display">
+      Время на решение истекло. Внизу представлено правильное решение задачи:
+    </h1>
+    
+    <!-- Schematic SVG Solution diagram overlay -->
+    <div class="max-w-md w-full bg-slate-50/50 rounded-3xl p-10 border border-slate-200/60 flex items-center justify-center mb-10 shadow-inner">
+      <svg width="240" height="240" viewBox="0 0 340 340" class="drop-shadow-md">
+        <!-- Lines -->
+        <g fill="none" stroke="#ef4444" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M 50 50 L 282 50 L 50 282 L 50 50 L 282 282" />
+        </g>
+        <!-- Circles points -->
+        <circle cx="50" cy="50" r="16" fill="#000" />
+        <circle cx="166" cy="50" r="16" fill="#000" />
+        <circle cx="282" cy="50" r="16" fill="#000" />
+        
+        <circle cx="50" cy="166" r="16" fill="#000" />
+        <circle cx="166" cy="166" r="16" fill="#000" />
+        <circle cx="282" cy="166" r="16" fill="#000" />
+        
+        <circle cx="50" cy="282" r="16" fill="#000" />
+        <circle cx="166" cy="282" r="16" fill="#000" />
+        <circle cx="282" cy="282" r="16" fill="#000" />
+      </svg>
+    </div>
+    
+    <button id="timeout-survey-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-5 px-16 rounded-2xl shadow-xl transition-all transform hover:scale-105 text-xl font-display cursor-pointer">
+      Перейти к опросу
+    </button>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SCREEN 5: EXPERIMENT SURVEY STEPS WRAPPER -->
+  <!-- ============================================ -->
+  <div id="screen-survey" class="flex flex-col items-center justify-center min-h-screen bg-white p-8 hidden">
+    <!-- Rendered dynamically in experiment.js -->
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SCREEN 6: FINISHED EXPERIMENT CONGRATS -->
+  <!-- ============================================ -->
+  <div id="screen-finished" class="flex flex-col items-center justify-center min-h-screen bg-white p-8 text-center hidden">
+    <div class="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-8 mx-auto animate-bounce">
+      <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-6 font-display">
+      Спасибо за участие в эксперименте!
+    </h1>
+    <p class="text-xl text-gray-600 mb-6 max-w-md mx-auto font-medium">Позовите экспериментатора, если эксперимент проходит очно. Если эксперимент проходит онлайн - завершите его.</p>
+    <p id="save-status" class="text-base font-semibold mb-8 min-h-6"></p>
+    <div class="text-gray-400 text-xs font-mono max-w-xs mx-auto border-t border-gray-100 pt-6">
+      Нажмите клавишу <span class="bg-slate-100 px-1.5 py-0.5 rounded border text-slate-800 font-bold uppercase">E</span> для экспорта или перехода к сводной статистике.
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SCREEN 7: STATS EXPORT && DATA UTILITIES -->
+  <!-- ============================================ -->
+  <div id="screen-export" class="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6 sm:p-12 text-gray-800 hidden">
+    <div class="w-full max-w-4xl bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden flex flex-col max-h-[85vh] fade-in">
+      
+      <!-- Export block Title card -->
+      <div class="bg-slate-900 text-white p-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span class="text-xl font-bold font-display uppercase tracking-wider">Results Export (Semicolon CSV)</span>
+        </div>
+        <span class="text-xs bg-slate-800 text-slate-400 font-mono px-3 py-1.5 rounded-md border border-slate-700/50">Matlab Format 0.1</span>
+      </div>
+
+      <!-- Preview code window section -->
+      <div class="p-6 overflow-auto bg-slate-950 font-mono text-xs text-blue-400 flex-1 leading-relaxed border-b border-gray-100 select-text selection:bg-blue-800 selection:text-white" id="export-csv-preview">
+        Генерируем результаты ...
+      </div>
+
+      <!-- Download Button Rails container -->
+      <div class="p-6 bg-gray-50 flex flex-wrap gap-4 justify-between items-center">
+        <!-- Reset App -->
+        <button id="btn-reset-app" class="px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 font-bold text-gray-700 text-sm transition-all shadow-sm cursor-pointer whitespace-nowrap">
+          Главный экран
+        </button>
+
+        <div class="flex flex-wrap gap-3">
+          <!-- Download raw details -->
+          <button id="btn-download-json" class="px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 font-bold text-gray-700 text-sm transition-all shadow-sm cursor-pointer whitespace-nowrap">
+            Скачать JSON
+          </button>
+          
+          <button id="btn-download-img" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition-all shadow-md cursor-pointer whitespace-nowrap">
+            Скачать Схему (PNG)
+          </button>
+          
+          <button id="btn-download-csv" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl text-sm transition-all shadow-lg transform hover:scale-105 cursor-pointer whitespace-nowrap">
+            Экспорт CSV
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- INTERACTIVE DRAWING CANVAS WRAPPER -->
+  <!-- ============================================ -->
+  <div id="canvas-container" class="absolute inset-0 z-10 hidden">
+    
+    <!-- Training Instructions floating Banner overlay -->
+    <div id="screen-training-hud" class="absolute top-10 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl text-center z-20 pointer-events-none hidden">
+      <div class="bg-white/95 backdrop-blur-md p-6 rounded-3xl border border-gray-100 shadow-2xl">
+        <h2 class="text-xl font-extrabold text-blue-600 mb-2 font-display">Тренировочная задача <span id="training-step-number">1</span> из 3</h2>
+        <p class="text-sm text-gray-700 font-semibold leading-relaxed">
+          Для прохождения тренировки, зажмите левую кнопку мыши и проведите прямую соединительную линию между двумя черными точками на экране. Ошибочный жест можно стереть клавишей <strong>R</strong>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Live Drawing Interactive Canvas plane -->
+    <canvas id="experiment-canvas" class="absolute inset-x-0 h-screen w-screen"></canvas>
+
+    <!-- Canvas Trial Buttons (Locked View) -->
+    <div id="task-lock-hud" class="absolute top-20 right-6 flex flex-col gap-4 z-40 hidden">
+      <button id="task-action-continue" class="bg-white/95 backdrop-blur-md border border-gray-300 hover:border-gray-400 text-gray-800 font-extrabold py-3.5 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer text-base">
+        Продолжить
+      </button>
+      <button id="task-action-save" class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3.5 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer text-base">
+        Сохранить
+      </button>
+    </div>
+
+    <!-- HUD stats view panels (Y is pressed) -->
+    <div id="top-hud-stats" class="absolute top-6 left-6 text-gray-600 font-bold z-30 pointer-events-none bg-white/80 p-4 rounded-2xl backdrop-blur-md border border-gray-100 shadow-lg hidden">
+      <div class="text-sm">Группа: <span id="hud-group-badge" class="text-blue-700 uppercase">--</span></div>
+      <div class="text-sm">Попытка: <span id="hud-trial-badge" class="text-blue-700">--</span></div>
+      <div class="text-sm mt-1.5 pt-1.5 border-t border-gray-200/60" id="hud-timer-container">
+        Время: <span id="hud-timer-badge" class="text-red-500 font-mono">--</span>
+      </div>
+    </div>
+
+    <!-- Parameter Config HUD SidePanel -->
+    <div id="settings-control-panel" class="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md p-6 rounded-3xl border-2 border-gray-200 shadow-2xl z-40 w-96 hidden" onmousedown="event.stopPropagation()">
+      <div class="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 border-b pb-2 flex justify-between items-center">
+        <span>Настройки симуляции</span>
+        <span class="text-red-500 font-bold font-mono">DEBUG</span>
+      </div>
+      
+      <!-- Panel Input ranges list -->
+      <div id="settings-panel-inputs">
+         <!-- Populated dynamically inside experiment.js based on selectedGroup -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification system overlay -->
+  <div id="notice-toast" class="hidden"></div>
+
+  <!-- jsPsych mount target -->
+  <div id="jspsych-target" class="hidden"></div>
+
+  <script src="experiment.js"></script>
+</body>
+</html>
