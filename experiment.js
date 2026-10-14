@@ -703,7 +703,6 @@ document.addEventListener('DOMContentLoaded', () => {
     state.allTrials.push(trial);
     firstStrokeStartTimeMs = 0;
 
-    uploadTrialImage(trial);
   }
 
   // --- Debug HUD (key Y) ---
@@ -912,6 +911,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     setSaveStatus('pending');
+     const lastDrawnTrial = [...state.allTrials].reverse().find(t => t.points.length > 0);
+    if (lastDrawnTrial) uploadTrialImage(lastDrawnTrial);
     await Promise.all(pendingUploads);
     endSessionTrial(); // ends the jsPsych run → the extension uploads the CSV → on_save
   }
